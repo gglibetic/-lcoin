@@ -6,10 +6,20 @@
 td {
   width: 30px
 }
+* {
+  font-family: sans
+}
 </style>
 </head>
 <body>
+
+<div style='float:right'>
+  <span id='cn'>200</span><img style='height:30px' src='coin.jpg'/>
+</div>
+
+
 <table id='x'></table>
+
 <script type='text/javascript'>
 
 function generate_number_1_to_10() {
@@ -44,13 +54,23 @@ function add_row_to_the_table(table_id, row) {
 
 function check_answers() {
   var table = document.getElementById('x');
+  var allgood = true;
   for (var i=0, row; row = table.rows[i]; i++) {
     if(row.cells[4].firstChild.value == qanda[i].result) {
       row.cells[4].firstChild.style = 'color:white;background-color:green';
     } else {
+      allgood = false;
       row.cells[4].firstChild.style = 'color:white;background-color:red';
     }
   }
+  if (allgood) {
+    localStorage.coins = Number(localStorage.coins) + 1;
+    redraw_coins();
+  }
+}
+
+function redraw_coins() {
+  document.getElementById('cn').innerHTML = localStorage.coins;
 }
 
 qanda = generate_questions_and_answers();
@@ -58,6 +78,10 @@ qanda.forEach(function(el) { add_row_to_the_table('x', print_one_row(el)); })
 var btn = "<input type='Submit' onclick='check_answers()'>";
 // add_row_to_the_table('x', btn);
 document.write(btn);
+if (localStorage.coins == undefined) {
+  localStorage.coins = 0;
+}
+redraw_coins();
 </script>
 </body>
 </html>
