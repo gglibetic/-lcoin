@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+<style type='text/css'>
+td {
+  width: 30px
+}
+</style>
+</head>
+<body>
+<table id='x'></table>
+<script type='text/javascript'>
+
+function generate_number_1_to_10() {
+  return Math.floor((Math.random() * 10) + 1);
+}
+
+function QandARecord(first, second, result) {
+  this.first = first;
+  this.second = second;
+  this.result = result;
+}
+
+function generate_questions_and_answers() {
+  var q_and_a = []
+  for (i=0; i<10; i++) {
+    fst = generate_number_1_to_10();
+    scnd = generate_number_1_to_10();
+    q_and_a.push(new QandARecord(fst, scnd, fst*scnd)); 
+  }
+  return q_and_a;
+}
+
+function print_one_row(record) {
+  return "<tr><td>" + record.first+"</td><td>x</td>" +
+             "<td>" + record.second+"</td><td>=</td>" +
+             "<td><input type='text'></input></td></tr>";
+}
+
+function add_row_to_the_table(table_id, row) {
+  document.getElementById(table_id).innerHTML += row;
+}
+
+function check_answers() {
+  var table = document.getElementById('x');
+  for (var i=0, row; row = table.rows[i]; i++) {
+    if(row.cells[4].firstChild.value == qanda[i].result) {
+      row.cells[4].firstChild.style = 'color:white;background-color:green';
+    } else {
+      row.cells[4].firstChild.style = 'color:white;background-color:red';
+    }
+  }
+}
+
+qanda = generate_questions_and_answers();
+qanda.forEach(function(el) { add_row_to_the_table('x', print_one_row(el)); })
+var btn = "<input type='Submit' onclick='check_answers()'>";
+// add_row_to_the_table('x', btn);
+document.write(btn);
+</script>
+</body>
+</html>
