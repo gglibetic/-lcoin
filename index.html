@@ -14,11 +14,11 @@ td {
 <body>
 
 <div style='float:right'>
-  <span id='cn'>200</span><img style='height:30px' src='coin.jpg'/>
+  <span id='cn'></span><img style='height:30px' src='coin.jpg'/>
 </div>
 
-
 <table id='x'></table>
+<input type='Submit' onclick='check_answers()'>
 
 <script type='text/javascript'>
 
@@ -26,30 +26,35 @@ function generate_number_1_to_10() {
   return Math.floor((Math.random() * 10) + 1);
 }
 
-function QandARecord(first, second, result) {
-  this.first = first;
-  this.second = second;
-  this.result = result;
+function generate_one_qanda_mul() {
+  x = generate_number_1_to_10();
+  y = generate_number_1_to_10();
+  return {
+    'problem_arr': [x, '&times;', y, "&equals;"],
+    'result': x * y
+  };
 }
 
+function generate_one_qanda_div() {
+  x = generate_number_1_to_10();
+  y = generate_number_1_to_10();
+  return {
+    'problem_arr': [x*y, '&divide;', y, "&equals;"],
+    'result': x 
+  };
+}
+
+var generate_one_qanda = (Math.random() > 0.5) ? 
+                         generate_one_qanda_mul :
+                         generate_one_qanda_div;
+
 function generate_questions_and_answers() {
-  var q_and_a = []
-  for (i=0; i<10; i++) {
-    fst = generate_number_1_to_10();
-    scnd = generate_number_1_to_10();
-    q_and_a.push(new QandARecord(fst, scnd, fst*scnd)); 
-  }
-  return q_and_a;
+  return [...Array(10).keys()].map(generate_one_qanda);
 }
 
 function print_one_row(record) {
-  return "<tr><td>" + record.first+"</td><td>x</td>" +
-             "<td>" + record.second+"</td><td>=</td>" +
-             "<td><input type='text'></input></td></tr>";
-}
-
-function add_row_to_the_table(table_id, row) {
-  document.getElementById(table_id).innerHTML += row;
+  var inner = record.problem_arr.map( el => "<td>"+el+"</td>").join('');
+  return "<tr>" + inner + "<td><input type='number'/></td></tr>";
 }
 
 function check_answers() {
@@ -72,12 +77,9 @@ function check_answers() {
 function redraw_coins() {
   document.getElementById('cn').innerHTML = localStorage.coins;
 }
-
+//
 qanda = generate_questions_and_answers();
-qanda.forEach(function(el) { add_row_to_the_table('x', print_one_row(el)); })
-var btn = "<input type='Submit' onclick='check_answers()'>";
-// add_row_to_the_table('x', btn);
-document.write(btn);
+document.getElementById('x').innerHTML = qanda.map(print_one_row).join('');
 if (localStorage.coins == undefined) {
   localStorage.coins = 0;
 }
