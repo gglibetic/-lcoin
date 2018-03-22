@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
 <style type='text/css'>
@@ -27,7 +28,7 @@ table {
 }
 
 #cnhold {
-  width: 3em;
+  width: 4em;
   margin:0 auto;
 }
 
@@ -50,93 +51,102 @@ button {
 </head>
 <body>
 
-<div id='cnhold' onclick='spend_coins()'>
-  <span id='cn'></span><img style='height:30px' src='coin.jpg'/>
+<div id='cnhold' onclick='spendCoins()' >
+  <img style='height:30px' src='coin.jpg'/>
+  <span id='cn' style='font-size: 1.5em'></span>
 </div>
 <br/>
 <div id='holder'>
   <table id='x'></table>
   <div id='check'>
-    <button onclick='check_answers()'>Submit</button>
+    <button onclick='checkAnswers()'>Submit</button>
   </div>
 </div>
 
 <script type='text/javascript'>
 
-function generate_number_1_to_10() {
+function generateNumber1To10() {
   return Math.floor((Math.random() * 10) + 1);
 }
 
-function generate_one_qanda_mul() {
-  x = generate_number_1_to_10();
-  y = generate_number_1_to_10();
+function generateOneQAndAMul() {
+  x = generateNumber1To10();
+  y = generateNumber1To10();
   return {
-    'problem_arr': [x, '&times;', y, "&equals;"],
+    'problemArr': [x, '&times;', y, "&equals;"],
     'result': x * y
   };
 }
 
-function generate_one_qanda_div() {
-  x = generate_number_1_to_10();
-  y = generate_number_1_to_10();
+function generateOneQAndADiv() {
+  x = generateNumber1To10();
+  y = generateNumber1To10();
   return {
-    'problem_arr': [x*y, '&divide;', y, "&equals;"],
+    'problemArr': [x * y, '&divide;', y, "&equals;"],
     'result': x 
   };
 }
 
-let generate_one_qanda = (Math.random() > 0.5) ? 
-                         generate_one_qanda_mul :
-                         generate_one_qanda_div;
+let generateOneQAndA = (Math.random() > 0.5) ? 
+                         generateOneQAndAMul :
+                         generateOneQAndADiv;
 
-function generate_questions_and_answers() {
-  return [...Array(10).keys()].map(generate_one_qanda);
+function generateQAndAs() {
+  return [...Array(10).keys()].map(generateOneQAndA);
 }
 
-function print_one_row(record) {
-  let inner = record.problem_arr.map( el => "<td>"+el+"</td>").join('');
+function printOneRow(record) {
+  let inner = record.problemArr.map( el => "<td>"+el+"</td>").join('');
   return "<tr>" + inner + "<td style='width:50%'><input type='number'/></td></tr>";
 }
 
-var token_given = false;
+let tokenGiven = false;
 
-function check_answers() {
-  var table = document.getElementById('x');
-  var allgood = true;
+function checkAnswers() {
+  let table = document.getElementById('x');
+  let allGood = true;
   for (var i=0, row; row = table.rows[i]; i++) {
-    if(row.cells[4].firstChild.value == qanda[i].result) {
+    if (row.cells[4].firstChild.value == qanda[i].result) {
       row.cells[4].firstChild.style = 'color:white;background-color:green';
     } else {
-      allgood = false;
+      allGood = false;
       row.cells[4].firstChild.style = 'color:white;background-color:red';
     }
   }
-  if (allgood && !token_given) {
-    token_given = true;
+  if (allGood && !tokenGiven) {
+    tokenGiven = true;
     localStorage.coins = Number(localStorage.coins) + 1;
-    redraw_coins();
+    redrawCoins();
   }
 }
 
-function spend_coins() {
-  to_spend = prompt("How much to spend?");
-  if (to_spend > localStorage.coins) {
+function spendCoins() {
+  let toSpend = Number(prompt("How much to spend?"));
+  if (isNaN(toSpend)) {
+    alert("Not a number!");
+    return;
+  }
+  if (toSpend < 0) {
+    alert("Negative number");
+    return;
+  }
+  if (toSpend > Number(localStorage.coins)) {
     alert("Not that much money");
-  } else {
-    localStorage.coins = localStorage.coins - to_spend;
-    redraw_coins();
-  }
+    return;
+  } 
+  localStorage.coins = Number(localStorage.coins) - toSpend;
+  redrawCoins();
 }
 
-function redraw_coins() {
+function redrawCoins() {
   document.getElementById('cn').innerHTML = localStorage.coins;
 }
-qanda = generate_questions_and_answers();
-document.getElementById('x').innerHTML = qanda.map(print_one_row).join('');
+let qanda = generateQAndAs();
+document.getElementById('x').innerHTML = qanda.map(printOneRow).join('');
 if (localStorage.coins == undefined) {
   localStorage.coins = 0;
 }
-redraw_coins();
+redrawCoins();
 
 </script>
 </body>
