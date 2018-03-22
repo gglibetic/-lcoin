@@ -7,6 +7,10 @@
   font-family: sans;
 }
 
+td {
+  height: 2em
+}
+
 #holder {
   margin: 0 auto;
   width: 22em;
@@ -83,7 +87,7 @@ function generate_questions_and_answers() {
 
 function print_one_row(record) {
   let inner = record.problem_arr.map( el => "<td>"+el+"</td>").join('');
-  return "<tr>" + inner + "<td><input type='number'/></td></tr>";
+  return "<tr>" + inner + "<td style='width:50%'><input type='number'/></td></tr>";
 }
 
 var token_given = false;
