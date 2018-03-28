@@ -65,13 +65,11 @@ button {
 
 <script type='text/javascript'>
 
-function generateNumber1To10() {
-  return Math.floor((Math.random() * 10) + 1);
-}
+const generateNumber1To10 = _ => Math.floor((Math.random() * 10) + 1);
 
 function generateOneQAndAMul() {
-  x = generateNumber1To10();
-  y = generateNumber1To10();
+  const x = generateNumber1To10();
+  const y = generateNumber1To10();
   return {
     'problemArr': [x, '&times;', y, "&equals;"],
     'result': x * y
@@ -79,41 +77,44 @@ function generateOneQAndAMul() {
 }
 
 function generateOneQAndADiv() {
-  x = generateNumber1To10();
-  y = generateNumber1To10();
+  const x = generateNumber1To10();
+  const y = generateNumber1To10();
   return {
     'problemArr': [x * y, '&divide;', y, "&equals;"],
     'result': x 
   };
 }
 
-let generateOneQAndA = (Math.random() > 0.5) ? 
-                         generateOneQAndAMul :
-                         generateOneQAndADiv;
+const generateOneQAndA = _ => (Math.random() > 0.5) ? 
+                                 generateOneQAndAMul() :
+                                 generateOneQAndADiv(); 
 
-function generateQAndAs() {
-  return [...Array(10).keys()].map(generateOneQAndA);
-}
+const generateQAndAs = (size) => [...Array(size).keys()].map(generateOneQAndA);
 
 function printOneRow(record) {
-  let inner = record.problemArr.map( el => "<td>"+el+"</td>").join('');
-  return "<tr>" + inner + "<td style='width:50%'><input type='number'/></td></tr>";
+  const inner = record.problemArr.map( el => "<td style='width:12.5%'>"+el+"</td>").join('');
+  return "<tr>" + inner + 
+    "<td style='width:50%'><input type='number' data-correct-value='" + record.result + "'/></td></tr>";
 }
 
-let tokenGiven = false;
+var tokenGiven = false;
+const isCorrectAnswer = (e) => e.value == e.getAttribute('data-correct-value');
+
+const colorInputs = function(e) {
+    var style = 'color:white;background-color:';
+    if (isCorrectAnswer(e)) {
+      style += 'green';
+    } else {
+      style += 'red';
+    }
+    e.style = style;
+  };
 
 function checkAnswers() {
-  let table = document.getElementById('x');
-  let allGood = true;
-  for (var i=0, row; row = table.rows[i]; i++) {
-    if (row.cells[4].firstChild.value == qanda[i].result) {
-      row.cells[4].firstChild.style = 'color:white;background-color:green';
-    } else {
-      allGood = false;
-      row.cells[4].firstChild.style = 'color:white;background-color:red';
-    }
-  }
-  if (allGood && !tokenGiven) {
+  const inputs = document.querySelectorAll("[data-correct-value]");
+  Array.from(inputs).forEach(colorInputs);
+  const numOfCorrect = Array.from(inputs).filter(isCorrectAnswer).length;
+  if (inputs.length == numOfCorrect && !tokenGiven) {
     tokenGiven = true;
     localStorage.coins = Number(localStorage.coins) + 1;
     redrawCoins();
@@ -141,11 +142,14 @@ function spendCoins() {
 function redrawCoins() {
   document.getElementById('cn').innerHTML = localStorage.coins;
 }
-let qanda = generateQAndAs();
+
+var qanda = generateQAndAs(10);
+
 document.getElementById('x').innerHTML = qanda.map(printOneRow).join('');
 if (localStorage.coins == undefined) {
   localStorage.coins = 0;
 }
+
 redrawCoins();
 
 </script>
